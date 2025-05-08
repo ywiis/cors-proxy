@@ -1,22 +1,18 @@
-const express = require('express');
-const corsAnywhere = require('cors-anywhere');
+const cors_proxy = require('cors-anywhere');
 
-const app = express();
-const PORT = process.env.PORT || 8080;
+const host = '0.0.0.0';
+const port = process.env.PORT || 8080;
 
-// إصلاح ردود preflight
-app.options('*', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-app-id, x-access-token, x-device-info');
-  res.sendStatus(200);
-});
-
-// بدء خادم cors-anywhere
-corsAnywhere.createServer({
-  originWhitelist: [], // السماح للجميع
+cors_proxy.createServer({
+  originWhitelist: [], // السماح لكل النطاقات
   requireHeader: [],
-  removeHeaders: ['cookie', 'cookie2']
-}).listen(PORT, () => {
-  console.log(`CORS Proxy running on port ${PORT}`);
+  removeHeaders: ['cookie', 'cookie2'],
+  // إضافة رؤوس CORS صريحة لأي طلب
+  setHeaders: {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, DELETE',
+    'Access-Control-Allow-Headers': '*',
+  }
+}).listen(port, host, () => {
+  console.log(`CORS Proxy running on http://${host}:${port}`);
 });
